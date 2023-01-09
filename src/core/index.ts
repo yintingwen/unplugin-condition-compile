@@ -9,7 +9,7 @@ export interface ConditionCompileOptions {
 export default createUnplugin((options: ConditionCompileOptions) => {
     return {
         name: 'condition-comment',
-        transform (code: string, id) {
+        transform (code: string) {
             const {target} = options
             if (!target) return code
 
