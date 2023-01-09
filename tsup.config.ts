@@ -2,11 +2,11 @@ import { Options } from "tsup";
 
 export const tsup: Options = {
     entry: [
-        'src/*.ts'
+        'src/index.ts',
     ],
     format: ['cjs', 'esm'],
     dts: true,
     splitting: true,
     clean: true,
-    shims: true
+    shims: false
 }
