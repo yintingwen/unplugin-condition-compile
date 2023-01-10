@@ -6,7 +6,7 @@ export interface ConditionCompileOptions {
     target: string
 }
 
-export default createUnplugin<ConditionCompileOptions>((options) => {
+const plugin = createUnplugin<ConditionCompileOptions>((options) => {
     return {
         name: 'condition-comment',
         transform (code: string) {
@@ -54,3 +54,6 @@ export default createUnplugin<ConditionCompileOptions>((options) => {
         }
     }
 })
+
+export const rollup = plugin.rollup
+export default plugin

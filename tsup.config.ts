@@ -1,12 +1,10 @@
-import { Options } from "tsup";
+import { defineConfig } from "tsup";
 
-export const tsup: Options = {
-    entry: [
-        'src/index.ts',
-    ],
+export default defineConfig({
+    entry: ['src/index.ts'],
     format: ['cjs', 'esm'],
     dts: true,
     splitting: true,
     clean: true,
     shims: false
-}
+})
