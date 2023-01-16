@@ -3,10 +3,15 @@ import MagicString from "magic-string";
 import { createUnplugin } from 'unplugin'
 
 export interface ConditionCompileOptions {
-    target: string
+    target: string;
+    startIncludeTag?: string;
+    startExcludeTag?: string;
+    endTag?: string;
 }
 
 const plugin = createUnplugin<ConditionCompileOptions>((options) => {
+    const { startIncludeTag = '#ifdef', startExcludeTag = '#ifndef', endTag = '#endif' } = options
+
     return {
         name: 'condition-comment',
         transform (code: string) {
@@ -26,11 +31,12 @@ const plugin = createUnplugin<ConditionCompileOptions>((options) => {
                 const commentStr = comment.value.trim()
                 if (!commentStr) return code
 
-                if (/^#ifn?def/g.test(commentStr)) {
-                    // 判断是包含还是排除
-                    let conditionInclude = commentStr.includes('ifdef')
+                if (commentStr.startsWith(startIncludeTag) || commentStr.startsWith(startExcludeTag)) {
+                    // 判断包含还是排除，并获取对应tag字符串
+                    const conditionInclude = commentStr.startsWith(startIncludeTag)
+                    const conditionTagStr = conditionInclude ? startIncludeTag : startExcludeTag
                     // 获取后面的平台字符串
-                    const platformStr = commentStr.replace(/#ifn?def/g, '').trim()
+                    const platformStr = commentStr.replace(conditionTagStr, '').trim()
                     if (!platformStr) return code
                     // 获取指定平台数组
                     const platforms = platformStr.split('||').map(item => item.trim())
@@ -41,7 +47,7 @@ const plugin = createUnplugin<ConditionCompileOptions>((options) => {
                     // 包含模式 且 在指定的平台中
                     conditionStart = comment.start
                 }
-                if (/^#endif/.test(commentStr)) {
+                if (commentStr.startsWith(endTag)) {
                     // 没有开启
                     if (!comment.end || conditionStart === undefined) return code
                     s.remove(conditionStart, comment.end)

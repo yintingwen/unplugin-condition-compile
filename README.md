@@ -14,7 +14,7 @@ import plugin, {rollup as pluginRollup} from 'unplugin-vue-components/rollup'
 
 export default {
     plugins: [
-        Components.rollup({ /* options */}),
+        plugin.rollup({ /* options */}),
         pluginRollup({ /* options */})
     ],
 }
@@ -26,10 +26,16 @@ export default {
 ## 参数
 ```typescript
 interface ConditionCompileOption {
-    target: string
+    target: string;
+    startIncludeTag?: string;
+    startExcludeTag?: string;
+    endTag?: string;
 }
 ```
-- target：编译时指定的条件字符串
+- target: 编译时指定的条件字符串
+- startIncludeTag: 包含条件的起始标签，默认#ifdef
+- startExcludeTag: 排除条件的起始标签，默认#ifndef
+- endif: 结束标签，默认#endif
 
 ## 使用
 使用注释，以 #ifdef 或 #ifndef 开头，以 #endif 结尾。匹配条件可自定义
@@ -51,4 +57,28 @@ console.log('target等于t1和t2时，这块代码才会编译进去')
 // #ifndef target1 || target2
 console.log('target等于t1或t2时，这块代码会被剔除')
 // endif
+```
+
+## 自定义语法
+可以通过 startIncludeTag，startExcludeTag，endTag 配置项来自定义模板中的语法
+```typescript
+export default {
+    plugins: [
+        plugin.rollup({
+			target: 'wx',
+            startIncludeTag: '$startIncludeTag',
+            startExcludeTag: '!startExcludeTag',
+			endTag: '@endTag'
+		})
+    ],
+}
+```
+```typescript
+// $startIncludeTag wx
+console.log('包含在wx中的code')
+// @endTag
+
+// !startExcludeTag wx
+console.log('不包含在wx中的code')
+// @endTag
 ```
